@@ -32,6 +32,7 @@ from utils import *
 from pydnet import *
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
+from array import array
 
 # forces tensorflow to run on CPU
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
@@ -118,12 +119,24 @@ def main(_):
           k = cv2.waitKey(1)
           fig = plt.figure()
           ax = fig.add_subplot(111, projection='3d')
-          cloud = point_cloud(disp, cx_320_240, cy_320_240, fx_320_240, fy_320_240, bf_320_240)
-          ax.scatter(cloud[0], cloud[1], cloud[2])
+          cloud = point_cloud(disp, cx_960_720, cy_960_720, fx_960_720, fy_960_720, bf_960_720)
+          ax.scatter(cloud[0], cloud[1], cloud[2], s=1)
           ax.set_xlabel('X Label')
           ax.set_ylabel('Y Label')
           ax.set_zlabel('Z Label')
           plt.show()
+#          if mode == 'file':
+#            f = open('PointCloud/' + str(image_sequence) + '.bin', 'w+b')
+#            byte_arr = []
+#            for i in range(len(cloud[0])):
+#              byte_arr.append(float(cloud[0][i]))
+#              byte_arr.append(float(cloud[1][i]))
+#              byte_arr.append(float(cloud[2][i]))
+#            float_array = array('d', byte_arr)
+#            float_array.tofile(f)
+#            f.close()
+#            image_sequence = image_sequence + 1
+
           if k == 1048603 or k == 27:
             break  # esc to quit
           if k == 1048688:
@@ -166,12 +179,15 @@ def point_cloud(depth, cx, cy, fx, fy, bf):
       for j in range(cols):
         z = depth[i][j]
         if z <= 0:
-          continue
-        x = z * (i - cx) / fx
-        y = z * (j - cy) / fy
-        result_x.append(x)
-        result_y.append(y)
-        result_z.append(z)
+          result_x.append(0.0)
+          result_y.append(0.0)
+          result_z.append(0.0)
+        else:
+          x = z * (i - cx) / fx
+          y = z * (j - cy) / fy
+          result_x.append(x)
+          result_y.append(y)
+          result_z.append(z)
 #    z = np.where(valid, depth, np.nan)
 #    x = np.where(valid, z * (c - cx) / fx, 0)
 #    y = np.where(valid, z * (r - cy) / fy, 0)
